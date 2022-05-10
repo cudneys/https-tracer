@@ -27,7 +27,7 @@ type RequestStats struct {
 	TLSHandshakeStart     time.Time           `json:"tls_handshake_start_time"`
 	TLSHandshakeDone      time.Time           `json:"tls_handshake_done_time"`
 	TLSHandshakeTimeDelta time.Duration       `json:"tls_handshake_time_delta"`
-	TLSConnectionState    tls.ConnectionState `json:"tls_connection_state"`
+	TLSConnectionState    tls.ConnectionState `json:"tls_connection_state,omitempty"`
 }
 
 type transport struct {
@@ -46,8 +46,10 @@ func (t *transport) GotConn(info httptrace.GotConnInfo) {
 func main() {
 
 	requestURL := flag.String("url", "", "Request URL to test")
-
+	logTLSInfo := flag.Bool("log-tls-info", false, "Log TLS info (Including certificate info)")
 	flag.Parse()
+
+	fmt.Printf("LOG TLS INFO: %s\n", *logTLSInfo)
 
 	if *requestURL == "" {
 		fmt.Println("ERROR: Missing --url flag")
@@ -71,9 +73,6 @@ func main() {
 			stats.DnsError = dnsInfo.Err
 			stats.DnsCoalesced = dnsInfo.Coalesced
 		},
-		//GotConn: func(connInfo httptrace.GotConnInfo) {
-		//	fmt.Printf("Got Conn: %+v\n", connInfo)
-		//},
 		ConnectStart: func(network, addr string) {
 			//fmt.Printf("NETWORK: %s || ADDR: %s\n", network, addr)
 			stats.ConnectStart = time.Now()
@@ -86,7 +85,9 @@ func main() {
 			stats.TLSHandshakeStart = time.Now()
 		},
 		TLSHandshakeDone: func(s tls.ConnectionState, err error) {
-			stats.TLSConnectionState = s
+			if *logTLSInfo == true {
+				stats.TLSConnectionState = s
+			}
 			stats.TLSHandshakeDone = time.Now()
 			stats.TLSHandshakeTimeDelta = stats.TLSHandshakeDone.Sub(stats.TLSHandshakeStart)
 		},
@@ -106,5 +107,7 @@ func dumpStats(s RequestStats) {
 		fmt.Printf("JSON ERROR: %s\n", err.Error())
 		return
 	}
+
+	//_ = val
 	fmt.Println(string(val))
 }

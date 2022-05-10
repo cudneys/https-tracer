@@ -1,8 +1,14 @@
 # HTTP/HTTPS Tracer
 
 ## Usage
+```
+Usage of ./dist/linux/http-tracer:
+  -log-tls-info
+        Log TLS info (Including certificate info)
+  -url string
+        Request URL to test
 
-The binary takes one flag: --url 
+```
 
 ## Example Command
 
