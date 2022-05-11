@@ -1,6 +1,7 @@
 # HTTP/HTTPS Tracer
 
 ## Usage
+### CLI
 ```
 Usage of ./dist/linux/http-tracer:
   -log-tls-info
@@ -10,13 +11,28 @@ Usage of ./dist/linux/http-tracer:
 
 ```
 
-## Example Command
+### API Server
+The API server takes one parameter as an environmnet variable: LISTEN_ADDRESS.
+```shell
+$ LISTEN_ADDRESS=":9876" ./dist/linux/http-tracer api 
+```
 
+The REST API server features a Swagger UI that's available at /swagger/index.html
+
+## Example Command
+### CLI
 ```shell
 $ ./dist/linux/http-tracer --url https://www.google.com
 ```
 
+### REST API
+```shell
+$ LISTEN_ADDRESS=":9876" ./dist/linux/http-tracer api 
+```
+
 ## Example Output
+
+This output is the same for the CLI command and the REST API server
 
 ```json
 {
