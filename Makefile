@@ -9,7 +9,15 @@ clean:
 	mkdir -p dist/osx/m1
 	mkdir -p dist/windows
 
-build: clean build-linux build-osx-intel build-osx-m1 build-windows
+deps:
+	go install github.com/swaggo/swag/cmd/swag@latest
+	go get -u github.com/swaggo/gin-swagger
+	go get -u github.com/swaggo/files
+
+prep:
+	swag init --parseDependency --parseInternal -g cmd/api.go
+
+build: clean prep build-linux build-osx-intel build-osx-m1 build-windows
 
 build-osx-intel:
 	GOOS=darwin GOARCH=amd64 go build -o dist/osx/intel/${BINARY}
